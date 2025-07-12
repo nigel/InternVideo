@@ -1,19 +1,21 @@
 import os
 import torch
 import torch.nn.functional as F
-from timm.models.layers import DropPath, to_2tuple
+from timm.layers import DropPath, to_2tuple
 from torch import nn
 
 import torch.utils.checkpoint as checkpoint
 from functools import partial
 from einops import rearrange
 
+'''
 try:
     from .flash_attention_class import FlashAttention
 except:
     from flash_attention_class import FlashAttention
-from flash_attn.modules.mlp import FusedMLP
-from flash_attn.ops.rms_norm import DropoutAddRMSNorm
+'''
+#from flash_attn.modules.mlp import FusedMLP
+#from flash_attn.ops.rms_norm import DropoutAddRMSNorm
 
 
 MODEL_PATH = 'your_model_path/internvl'
@@ -172,8 +174,9 @@ class Attention(nn.Module):
         
         self.use_flash_attn = use_flash_attn
         if use_flash_attn:
+            assert False, "im gpu poor go away"
             self.causal = causal
-            self.inner_attn = FlashAttention(attention_dropout=attn_drop)
+            #self.inner_attn = FlashAttention(attention_dropout=attn_drop)
         
         self.qk_normalization = qk_normalization
         self.q_norm = norm_layer(dim) if qk_normalization else nn.Identity()
@@ -276,6 +279,7 @@ class Block(nn.Module):
         self.norm2 = norm_layer(dim)
         mlp_hidden_dim = int(dim * mlp_ratio)
         if use_fused_mlp:
+            assert False, "Do not use fused MLP"
             self.mlp = FusedMLP(in_features=dim, hidden_features=mlp_hidden_dim, heuristic=fused_mlp_heuristic)
         else:
             self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop)
