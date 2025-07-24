@@ -25,3 +25,6 @@ torchvision
 tqdm==4.66.1
 transformers==4.28.1
 wandb==0.16.1
+easydict
+peft==0.10.0
+open-clip-torch
