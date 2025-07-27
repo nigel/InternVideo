@@ -8,7 +8,7 @@ from torch import nn
 
 from models.backbones.internvideo2 import pretrain_internvideo2_1b_patch14_224
 from models.backbones.bert.builder import build_bert
-#from models.criterions import get_sim
+from models.criterions import get_sim
 from models.backbones.internvideo2.pos_embed import interpolate_pos_embed_internvideo2_new
 from models.backbones.bert.tokenization_bert import BertTokenizer
 
@@ -48,6 +48,48 @@ def get_text_feat_dict(texts, clip, text_feat_d={}):
 def get_vid_feat(frames, vlm):
     return vlm.get_vid_features(frames)
 
+
+def retrieve_video(list_of_frames,
+                   text,
+                   model,
+                   topk:int=5,
+                   config: dict={},
+                  device=torch.device('cpu')):
+    vlm = model
+    vlm = vlm.to(device)
+    
+    fn = config.get('num_frames', 8)
+    size_t = config.get('size_t', 224)
+
+    frames_tensors = []
+    vid_features = []
+
+    for video in list_of_frames:
+        frames_tensor = frames2tensor(video, fnum=fn, target_size=(size_t, size_t), device=device)
+        frames_tensors.append(frames_tensor)
+        vid_feat = vlm.get_vid_feat(frames_tensor)
+        vid_features.append(vid_feat)
+
+    vid_features = torch.cat(vid_features, dim=0)
+    txt_feat = vlm.get_txt_feat(text)
+
+    sorted_probs, sorted_idxs = (100.0 * txt_feat @ vid_features.T).softmax(dim=-1)[0].topk(len(vid_features))
+    print(sorted_idxs)
+    print(sorted_probs)
+
+
+    '''
+    i2t_scores, t2i_scores = get_sim(
+        model.vision_proj(vid_feat), model.text_proj(text_feats[:, 0])
+    )
+    '''
+    i2t_scores, t2i_scores = get_sim(
+        vid_features, txt_feat
+    )
+
+    i2t_scores_dsl = i2t_scores * i2t_scores.softmax(dim=0)
+    print(f"t2i scores: {i2t_scores_dsl}")
+    print(f"softmax: {i2t_scores.softmax(dim=0)}")
 
 def retrieve_text(frames, 
                   texts, 
@@ -143,6 +185,9 @@ class InternVideo2_Stage2(nn.Module):
         self.text_encoder = self.build_text_encoder()
         self.freeze_text()
 
+        print(f"vision width: {self.vision_width}")
+        print(f"embed dim: {self.embed_dim}")
+        print(f"text width: {self.text_width}")
         self.vision_proj = nn.Linear(self.vision_width, self.embed_dim)
         self.text_proj = nn.Linear(self.text_width, self.embed_dim)
 

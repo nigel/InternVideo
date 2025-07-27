@@ -9,29 +9,30 @@ from utils.config import (Config,
                     eval_dict_leaf)
 
 from demo.utils import (retrieve_text,
+                  retrieve_video,
                   _frame_from_video,
                   setup_internvideo2)
+from IPython import embed
 
-video = cv2.VideoCapture('demo/example1.mp4')
-frames = [x for x in _frame_from_video(video)]
+from tasks.retrieval_utils import (extract_text_feats, extract_vision_feats)
+import os
 
-text_candidates = ["A playful dog and its owner wrestle in the snowy yard, chasing each other with joyous abandon.",
-                   "A man in a gray coat walks through the snowy landscape, pulling a sleigh loaded with toys.",
-                   "A person dressed in a blue jacket shovels the snow-covered pavement outside their house.",
-                   "A pet dog excitedly runs through the snowy yard, chasing a toy thrown by its owner.",
-                   "A person stands on the snowy floor, pushing a sled loaded with blankets, preparing for a fun-filled ride.",
-                   "A man in a gray hat and coat walks through the snowy yard, carefully navigating around the trees.",
-                   "A playful dog slides down a snowy hill, wagging its tail with delight.",
-                   "A person in a blue jacket walks their pet on a leash, enjoying a peaceful winter walk among the trees.",
-                   "A man in a gray sweater plays fetch with his dog in the snowy yard, throwing a toy and watching it run.",
-                   "A person bundled up in a blanket walks through the snowy landscape, enjoying the serene winter scenery."]
+video_frames = []
+directory = "/Users/nchen/analyze/sample/"
+
+text = "person walking out of a door"
+
+for f in os.listdir(directory):
+    if not os.path.isfile(os.path.join(directory, f)):
+        continue
+    video = cv2.VideoCapture(directory + f)
+    video_frames.append([x for x in _frame_from_video(video)])
+    print(f)
+    if len(video_frames) == 5:
+        break
 
 config = Config.from_file('demo/internvideo2_stage2_config.py')
 config = eval_dict_leaf(config)
 
 intern_model, tokenizer = setup_internvideo2(config)
-
-texts, probs = retrieve_text(frames, text_candidates, model=intern_model, topk=5, config=config)
-
-for t, p in zip(texts, probs):
-    print(f'text: {t} ~ prob: {p:.4f}')
+retrieve_video(video_frames, text, model=intern_model, topk=5, config=config)

@@ -6,7 +6,7 @@ from configs.model import *
 num_workers = 6
 
 # ========================= input ==========================
-num_frames = 4
+num_frames = 16
 num_frames_test = 4
 batch_size = 8
 batch_size_test = 4
