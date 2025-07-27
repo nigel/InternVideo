@@ -26,7 +26,7 @@ def normalize(data):
     return (data/255.0-v_mean)/v_std
 
 
-def frames2tensor(vid_list, fnum=8, target_size=(224, 224), device=torch.device('cuda')):
+def frames2tensor(vid_list, fnum=8, target_size=(224, 224), device=torch.device('cpu')):
     assert(len(vid_list) >= fnum)
     step = len(vid_list) // fnum
     vid_list = vid_list[::step][:fnum]
@@ -54,7 +54,7 @@ def retrieve_text(frames,
                   model,
                   topk:int=5,
                   config: dict={},
-                  device=torch.device('cuda')):
+                  device=torch.device('cpu')):
     
     vlm = model
     vlm = vlm.to(device)
