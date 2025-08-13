@@ -23,7 +23,7 @@ from torch.utils.data import ConcatDataset, DataLoader
 
 from dataset.resample_concat_dataset import ResampleConcatDataset
 from models.backbones.internvideo2.pos_embed import interpolate_pos_embed_internvideo2_new
-from models.backbones.bert.tokenization_bert import BertTokenizer
+from transformers import BertTokenizer
 from utils.optimizer import create_optimizer
 from utils.scheduler import create_scheduler
 from utils.distributed import get_rank

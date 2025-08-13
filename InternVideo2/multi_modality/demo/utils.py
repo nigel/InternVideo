@@ -6,11 +6,12 @@ import io
 import torch
 from torch import nn
 
-from models.backbones.internvideo2 import pretrain_internvideo2_1b_patch14_224
-from models.backbones.bert.builder import build_bert
-from models.criterions import get_sim
-from models.backbones.internvideo2.pos_embed import interpolate_pos_embed_internvideo2_new
-from models.backbones.bert.tokenization_bert import BertTokenizer
+from InternVideo.InternVideo2.multi_modality.models.backbones.internvideo2 import pretrain_internvideo2_1b_patch14_224
+from InternVideo.InternVideo2.multi_modality.models.backbones.bert.builder import build_bert
+from InternVideo.InternVideo2.multi_modality.models.criterions import get_sim
+from InternVideo.InternVideo2.multi_modality.models.backbones.internvideo2.pos_embed import interpolate_pos_embed_internvideo2_new
+#from InternVideo.InternVideo2.multi_modality.models.backbones.bert.tokenization_bert import BertTokenizer
+from transformers import BertTokenizer
 
 def _frame_from_video(video):
     while video.isOpened():
@@ -119,8 +120,17 @@ def retrieve_text(frames,
 
 def setup_internvideo2(config: dict):
     if "bert" in config.model.text_encoder.name:
-        tokenizer = BertTokenizer.from_pretrained(config.model.text_encoder.pretrained, local_files_only=True)
+        print("loading that shiet")
+        print("loading that shiet")
+        print("loading that shiet")
+        print("loading that shiet")
+        print("loading that shiet")
+        print("loading that shiet")
+        #tokenizer = BertTokenizer.from_pretrained("/Users/nchen/InternVideo/InternVideo2/multi_modality/bert-large-uncased", local_files_only=True)
+        tokenizer = BertTokenizer.from_pretrained("bert-large-uncased")
+        print("loading bert")
         model = InternVideo2_Stage2(config=config, tokenizer=tokenizer, is_pretrain=True)
+        print('done loading')
     else:
         model = InternVideo2_Stage2(config=config, is_pretrain=True)
         tokenizer = model.tokenizer
@@ -129,7 +139,8 @@ def setup_internvideo2(config: dict):
         torch.set_float32_matmul_precision('high')
         model = torch.compile(model)
 
-    model = model.to(torch.device(config.device))
+    #model = model.to_empty(torch.device(config.device))
+    #model = model.to_empty(torch.device('mps'))
     model_without_ddp = model
 
     if (config.pretrained_path.strip() and (os.path.isfile(config.pretrained_path)) or "s3://" in config.pretrained_path):

@@ -193,6 +193,16 @@ class BertTokenizer(PreTrainedTokenizer):
                 "model use `tokenizer = BertTokenizer.from_pretrained(PRETRAINED_MODEL_NAME)`".format(
                     vocab_file)
             )
+        print("Loading the vocab")
+        print("Loading the vocab")
+        print("Loading the vocab")
+        print("Loading the vocab")
+        print("Loading the vocab")
+        print("Loading the vocab")
+        print("Loading the vocab")
+        print("Loading the vocab")
+        print("Loading the vocab")
+        print("Loading the vocab")
         self.vocab = load_vocab(vocab_file)
         self.ids_to_tokens = collections.OrderedDict(
             [(ids, tok) for tok, ids in self.vocab.items()])

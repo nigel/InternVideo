@@ -8,8 +8,8 @@ from torch import nn
 from .utils import allgather_wgrad
 #from multi_modality.utils.distributed import get_rank, get_world_size
 #from multi_modality.utils.easydict import EasyDict
-from utils.distributed import get_rank, get_world_size
-from utils.easydict import EasyDict
+from InternVideo.InternVideo2.multi_modality.utils.distributed import get_rank, get_world_size
+from InternVideo.InternVideo2.multi_modality.utils.easydict import EasyDict
 
 logger = logging.getLogger(__name__)
 

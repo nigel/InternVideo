@@ -1,12 +1,12 @@
-from configs.data import *
-from configs.model import *
+from InternVideo.InternVideo2.multi_modality.configs.data import *
+from InternVideo.InternVideo2.multi_modality.configs.model import *
 # ========================= data ==========================
 # NOTE The train_file will not be used during the evaluation
 
 num_workers = 6
 
 # ========================= input ==========================
-num_frames = 16
+num_frames = 8 
 num_frames_test = 4
 batch_size = 8
 batch_size_test = 4
@@ -105,7 +105,7 @@ seed = 42
 save_latest = False
 auto_resume = True
 jump_evaluate = False
-pretrained_path = ""
+pretrained_path = "/Users/nchen/InternVideo/InternVideo2/multi_modality/zoo/InternVideo2-stage2_1b-224p-f4.pt"
 
 deepspeed = dict(
     enable=True,
